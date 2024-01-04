@@ -1,5 +1,5 @@
-const dotenv = require("dotenv")
-dotenv.config()
+const dotenv = require("dotenv");
+dotenv.config();
 const { APM_CLIENT_CONFIG } = require("../constants");
 const apm = require("elastic-apm-node").start(APM_CLIENT_CONFIG);
 
@@ -13,18 +13,27 @@ const {
 
 const getCall = async (req, res) => {
   const data = getCallHelper();
-  res.status(200).send({
-    success: true,
-    data,
-  });
+  var trans = apm.startTransaction("Custom Transaction", "Custom Type");
+  setTimeout(() => {
+    if (trans) trans.end();
+    res.status(200).send({
+      success: true,
+      data,
+    });
+  }, 5000);
 };
 
 const postCall = async (req, res) => {
   const data = postCallHelper();
-  res.status(200).send({
-    success: true,
-    data,
-  });
+  var span = apm.startSpan("POST CALL STARTED");
+  apm.startSpan("POST CALL STARTED");
+  setTimeout(() => {
+    if (span) span.end();
+    res.status(200).send({
+      success: true,
+      data,
+    });
+  }, 5000);
 };
 
 const putCall = async (req, res) => {

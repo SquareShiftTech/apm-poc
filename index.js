@@ -11,9 +11,6 @@ app.use(bodyparser.urlencoded({ extended: true }));
 
 const PORT = parseInt(process.env.PORT) || 8080;
 
-app.get("/", function (req, res) {
-  res.status(200).send("Hello from Node Server");
-});
 app.use('/', ServiceRoute);
 
 app.listen(PORT, () => {
