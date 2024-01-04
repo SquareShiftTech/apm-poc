@@ -1,6 +1,7 @@
-const apm = require("elastic-apm-node").start(APM_CLIENT_CONFIG);
-
+const dotenv = require("dotenv")
+dotenv.config()
 const { APM_CLIENT_CONFIG } = require("../constants");
+const apm = require("elastic-apm-node").start(APM_CLIENT_CONFIG);
 
 const {
   getCallHelper,
