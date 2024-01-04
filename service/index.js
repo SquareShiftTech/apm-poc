@@ -1,3 +1,7 @@
+const apm = require("elastic-apm-node").start(APM_CLIENT_CONFIG);
+
+const { APM_CLIENT_CONFIG } = require("../constants");
+
 const {
   getCallHelper,
   postCallHelper,
@@ -41,10 +45,17 @@ const deleteCall = async (req, res) => {
 const makeAnError = async (req, res) => {
   const data = makeErrorHelper();
   const error = new Error("Custom Error");
+  apm.captureError(error, {
+    user: {
+      id: "unique_id",
+      username: "foo",
+      email: "foo@example.com",
+    },
+  });
   res.status(500).send({
     success: true,
     data,
-    error : error.message,
+    error: error.message,
   });
 };
 
@@ -53,5 +64,5 @@ module.exports = {
   postCall,
   putCall,
   deleteCall,
-  makeAnError
+  makeAnError,
 };
