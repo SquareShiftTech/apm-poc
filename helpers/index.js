@@ -15,13 +15,17 @@ const deleteCallHelper = () => {
 };
 
 const makeErrorHelper = () => {
-    return "This is a Error generate call";
-  };
+  return "This is a Error generate call";
+};
 
+const convertCurrency = (inr, rate) => {
+  return inr * rate;
+};
 module.exports = {
   getCallHelper,
   postCallHelper,
   putCallHelper,
   deleteCallHelper,
-  makeErrorHelper
+  makeErrorHelper,
+  convertCurrency,
 };

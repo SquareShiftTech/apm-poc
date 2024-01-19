@@ -1,7 +1,5 @@
 const dotenv = require("dotenv");
 dotenv.config();
-const { APM_CLIENT_CONFIG } = require("../constants");
-const apm = require("elastic-apm-node").start(APM_CLIENT_CONFIG);
 
 const {
   getCallHelper,
@@ -10,10 +8,19 @@ const {
   deleteCallHelper,
   makeErrorHelper,
 } = require("../helpers");
+const {
+  getApmInstance,
+  isApmLoggingEnabled,
+} = require("./elastic-apm-service");
+
+console.log("Controller index");
+const apm = getApmInstance();
+const apmEnabled = isApmLoggingEnabled();
 
 const getCall = async (req, res) => {
   const data = getCallHelper();
-  var trans = apm.startTransaction("Custom Transaction", "Custom Type");
+  var trans =
+    apmEnabled && apm.startTransaction("Custom Transaction", "Custom Type");
   setTimeout(() => {
     if (trans) trans.end();
     res.status(200).send({
@@ -25,7 +32,7 @@ const getCall = async (req, res) => {
 
 const postCall = async (req, res) => {
   const data = postCallHelper();
-  var span = apm.startSpan("POST CALL STARTED");
+  var span = apmEnabled && apm.startSpan("POST CALL STARTED");
   apm.startSpan("POST CALL STARTED");
   setTimeout(() => {
     if (span) span.end();
@@ -55,13 +62,14 @@ const deleteCall = async (req, res) => {
 const makeAnError = async (req, res) => {
   const data = makeErrorHelper();
   const error = new Error("Custom Error");
-  apm.captureError(error, {
-    user: {
-      id: "unique_id",
-      username: "foo",
-      email: "foo@example.com",
-    },
-  });
+  apmEnabled &&
+    apm.captureError(error, {
+      user: {
+        id: "unique_id",
+        username: "foo",
+        email: "foo@example.com",
+      },
+    });
   res.status(500).send({
     success: true,
     data,
