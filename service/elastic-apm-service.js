@@ -1,4 +1,7 @@
 // Service that handles apm flag enabling, creating apm instance etc.
+const dotenv = require("dotenv");
+dotenv.config();
+
 const {
   APM_CLIENT_CONFIG,
   apmEnabled: apmEnabledFlag,
