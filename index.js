@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const bodyparser = require("body-parser");
 const { APM_CLIENT_CONFIG, CURRENCY_MAP, PORT } = require("./constants");
+const { default: axios } = require("axios");
 let apm;
 const app = express();
 app.use(cors());
@@ -89,17 +90,18 @@ app.get("/error-call", function (req, res) {
 });
 
 // Returns list of currency equivale
-app.get("/currency", function (req, res) {
+app.get("/currency", async function (req, res) {
   var trans = isAPMEnabled
     ? apm.startTransaction("Get Currency transaction", "GET API")
     : null;
+  const { data } = await axios.get(
+    "https://api.coindesk.com/v1/bpi/currentprice.json"
+  );
   setTimeout(() => {
     if (trans) trans.end();
     res.status(200).send({
       success: true,
-      data: {
-        ...CURRENCY_MAP,
-      },
+      data: data?.bpi,
     });
   }, 2000);
 });
